@@ -1,6 +1,3 @@
-import socket
-import threading
-
 from imports import *
 
 PORT = 666
