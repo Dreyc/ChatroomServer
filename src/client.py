@@ -1,7 +1,8 @@
 from imports import *
 
-PORT = 666
-SERVER = "localhost"
+#Can't bind to an under 1024 number as an unprivillege user
+PORT = 6666
+SERVER = "10.3.141.1" #"localhost"
 #socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
@@ -14,8 +15,22 @@ def connect():
 
 def send(client, message):
     messageBis= message.encode(FORMAT)
-    client.send(message)
+    client.send(messageBis)
 
-client = connect()
-send(client, "testing")
+def start():
+    answer = input("Would you like to connect (ye/no) ?")
+    if answer.lower() != "yes": #.lower() to set the answer to lower case
+        return
 
+    connection = connect()
+    while True:
+        message = input("Message (q for quit): \n")
+        if message.lower() == "q":
+            break
+        send(connection, message)
+    send(connection, DISCONNECT_MESSAGE)
+    time.sleep(1) #second
+    print("Disconnected")
+
+
+start()
