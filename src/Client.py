@@ -1,12 +1,8 @@
-import socket
-import os
-import threading
-import time
-from tkinter import *
+from Imports import *
 
 # Same as server.py
 PORT = 6666
-SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
+SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"

@@ -1,6 +1,4 @@
-import datetime
-import socket
-import os
+from Imports import *
 
 # Opening the file 'a+' to read and append mode
 file = open('Message.txt', 'a+')

@@ -1,7 +1,4 @@
-import socket
-import threading
-import os
-import time
+from Imports import *
 
 # free port above 1024 (no root access needed)
 PORT = 6666
