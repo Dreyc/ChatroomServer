@@ -1,5 +1,7 @@
 import socket
 import threading
+import os
+import time
 
 # free port above 1024 (no root access needed)
 PORT = 6666
@@ -27,20 +29,31 @@ def broadcast(message):
 
 # Handle incomming messages
 def handle_client(connection, address):
-    print(f"[NEW CONNECTION] {address}")
+    print(f"[NEW CONNECTION] {address}\n")
 
     try:
         connected = True
         while connected:
             # received message
-            message = connection.recv(1024)
-            print(message)
-            broadcast(message)
+            message = connection.recv(1024).decode(FORMAT)
 
-            if message == DISCONNECT_MESSAGE:
+            if message == DISCONNECT_MESSAGE or message.lower() == "quit":
                 print(f'{clients[connection]} Deconnected!')
                 broadcast(f'{clients[connection]} Deconnected!'.encode(FORMAT))
                 connected = False
+            elif message.lower() == "!serveroff":
+                if clients[connection].lower().__contains__("admin"):
+                    print(f'{clients[connection]} asked to down the server')
+                    broadcast("Downing the server!".encode(FORMAT))
+                    print("[BACKUP ENDED]")
+                    time.sleep(1)
+                    os._exit(0)
+                else:
+                    connection.send("[ACCESS DENIED]".encode(FORMAT))
+            elif message.lower() == "!nbconnections":
+                connection.send(f"[{threading.active_count() - 1} active connection(s)]".encode(FORMAT))
+            else:
+                broadcast(message.encode(FORMAT))
     finally:
         del clients[connection]
         connection.close()
@@ -65,7 +78,7 @@ def start():
         clients[connection] = name
 
         if name != 'Backup':
-            print(f"Your name : {name}")
+            print(f"New connection's name : {name}")
 
             # To every user connected
             broadcast(f"{name} has joined the chat!\n".encode(FORMAT))
@@ -82,3 +95,4 @@ def start():
 
 # Launching the chat session
 start()
+os._exit(0)

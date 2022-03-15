@@ -1,5 +1,7 @@
 import socket
+import os
 import threading
+import time
 from tkinter import *
 
 # Same as server.py
@@ -125,6 +127,14 @@ class GUI:
                 message = client.recv(1024).decode(FORMAT)
                 if message == "Name":
                     client.send(self.name.encode(FORMAT))
+                elif message == "Downing the server!":
+                    # insert message to text box
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+                    time.sleep(2)
+                    self.Window.destroy()
                 else:
                     # insert message to text box
                     self.textCons.config(state=NORMAL)
@@ -143,11 +153,17 @@ class GUI:
         while True:
             if self.message == DISCONNECT_MESSAGE or self.message.lower() == "quit":
                 client.send(DISCONNECT_MESSAGE.encode(FORMAT))
+                time.sleep(1)
+                self.Window.destroy()
+            elif self.message.startswith("!"):
+                client.send(self.message.encode(FORMAT))
                 break
-            message = f"{self.name}: {self.message}"
-            client.send(message.encode(FORMAT))
-            break
+            else:
+                message = f"{self.name}: {self.message}"
+                client.send(message.encode(FORMAT))
+                break
 
 
 # Create a GUI object
 g = GUI()
+os._exit(0)
