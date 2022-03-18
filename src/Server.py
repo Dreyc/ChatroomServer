@@ -2,7 +2,7 @@ from Imports import *
 
 # free port above 1024 (no root access needed)
 PORT = 6666
-SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
+SERVER = "localhost"#socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -16,7 +16,6 @@ clients = dict()
 # address of the server in the socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDRESS)
-
 
 # Send the message to other users
 def broadcast(message):
@@ -49,6 +48,9 @@ def handle_client(connection, address):
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
             elif message.lower() == "!nbconnections":
                 connection.send(f"[{threading.active_count() - 1} active connection(s)]".encode(FORMAT))
+            elif message.lower() == "!wizz":
+                broadcast(f"{clients[connection]} wizzed!".encode(FORMAT))
+                broadcast("wizz".encode(FORMAT))
             else:
                 broadcast(message.encode(FORMAT))
     finally:

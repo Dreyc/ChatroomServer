@@ -2,7 +2,7 @@ from Imports import *
 
 # Same as server.py
 PORT = 6666
-SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -10,6 +10,13 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 # Creating a new client and connect to the server
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDRESS)
+
+# Sound of the wizz command
+wizz_sound = AudioSegment.from_mp3("wizz_sound.mp3")
+
+
+def wizz():
+    play(wizz_sound)
 
 
 # Create a GUI class for the chat and the interface
@@ -108,6 +115,13 @@ class GUI:
 
         self.textCons.config(state=DISABLED)
 
+    # def on_press(self, key):
+    #     if key == keyboard.Key.enter:
+    #         self.sendButton(self.entryMessage.get())
+    #
+    # listener = keyboard.Listener(on_press=on_press(self))
+    # listener.start()
+
     # Starts the thread for sending messages
     def sendButton(self, message):
         self.textCons.config(state=DISABLED)
@@ -131,6 +145,8 @@ class GUI:
                     self.textCons.see(END)
                     time.sleep(2)
                     self.Window.destroy()
+                elif message == "wizz":
+                    wizz()
                 else:
                     # insert message to text box
                     self.textCons.config(state=NORMAL)
