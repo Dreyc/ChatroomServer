@@ -19,6 +19,10 @@ backup = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 backup.connect(ADDRESS)
 
 
+def empty():
+    open('Message.txt', 'w').close()
+
+
 def addMessage(message):
     file.write(message + '\n')
 
@@ -29,11 +33,16 @@ def start():
     while enabled:
         try:
             message = backup.recv(1024).decode(FORMAT)
-            if message == "Downing the server!":
-                file.write("[END OF THE SESSION]\n")
-                enabled = False
+            if message.__contains__("Downing the server!"):
+                if message.lower().__contains__("[No]"):
+                    file.write("[END OF THE SESSION]\n")
+                    enabled = False
+                else:
+                    empty()
+                    enabled = False
             elif message != 'Name' and ~message.__contains__('has joined the chat!'):
                 addMessage(message)
+
         except:
             # Error gestion
             print("Error!")

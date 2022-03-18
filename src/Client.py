@@ -1,3 +1,5 @@
+import emoji
+
 from Imports import *
 
 # Same as server.py
@@ -125,7 +127,7 @@ class GUI:
     # Starts the thread for sending messages
     def sendButton(self, message):
         self.textCons.config(state=DISABLED)
-        self.message = message
+        self.message = emoji.demojize(message, language='alias')
         self.entryMessage.delete(0, END)
         send = threading.Thread(target=self.sendMessage)
         send.start()
@@ -137,7 +139,7 @@ class GUI:
                 message = client.recv(1024).decode(FORMAT)
                 if message == "Name":
                     client.send(self.name.encode(FORMAT))
-                elif message == "Downing the server!":
+                elif message.__contains__("Downing the server!"):
                     # insert message to text box
                     self.textCons.config(state=NORMAL)
                     self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
@@ -150,7 +152,7 @@ class GUI:
                 else:
                     # insert message to text box
                     self.textCons.config(state=NORMAL)
-                    self.textCons.insert(END, message + "\n\n")
+                    self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
                     self.textCons.config(state=DISABLED)
                     self.textCons.see(END)
             except:
@@ -170,9 +172,16 @@ class GUI:
             elif self.message.startswith("!"):
                 client.send(self.message.encode(FORMAT))
                 break
-            else:
+            elif self.message != "":
                 message = f"{self.name}: {self.message}"
                 client.send(message.encode(FORMAT))
+                break
+            else:
+                # insert message to text box
+                self.textCons.config(state=NORMAL)
+                self.textCons.insert(END, "[EMPTY MESSAGE]" + "\n\n")
+                self.textCons.config(state=DISABLED)
+                self.textCons.see(END)
                 break
 
 
