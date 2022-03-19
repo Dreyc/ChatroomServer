@@ -8,3 +8,14 @@ from tkinter import *
 from pydub import AudioSegment
 from pydub.playback import play
 import emoji
+import hyperlink
+import webbrowser
+from HyperlinkManager import *
+from functools import partial
+
+PORT = 6666
+
+
+
+#sudo apt install unifont
+#pip install hyperlink

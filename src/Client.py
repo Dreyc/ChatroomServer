@@ -1,9 +1,7 @@
-import emoji
-
 from Imports import *
 
 # Same as server.py
-PORT = 6666
+# PORT = 6666
 SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
@@ -20,6 +18,9 @@ wizz_sound = AudioSegment.from_mp3("wizz_sound.mp3")
 def wizz():
     play(wizz_sound)
 
+# Open hyperlin
+def openUrl(url):
+   webbrowser.open_new_tab(url)
 
 # Create a GUI class for the chat and the interface
 class GUI:
@@ -132,6 +133,7 @@ class GUI:
         send = threading.Thread(target=self.sendMessage)
         send.start()
 
+
     # Receeve messages
     def receive(self):
         while True:
@@ -149,6 +151,12 @@ class GUI:
                     self.Window.destroy()
                 elif message == "wizz":
                     wizz()
+                elif message.lower() == "[EMOTE LIST]":
+                    hyperlink = HyperlinkManager(self.textCons)
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, message, hyperlink.add(partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))))
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
                 else:
                     # insert message to text box
                     self.textCons.config(state=NORMAL)

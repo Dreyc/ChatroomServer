@@ -1,4 +1,39 @@
-2022-03-18 19:39:55.688059
+2022-03-19 11:45:55.817765
+[BEGINNING OF THE SESSION]
+Admin wizzed!
+wizz
+Admin: :heart:
+Admin: :laughing:
+[END OF THE SESSION]
+2022-03-19 11:49:39.830322
 [BEGINNING OF THE SESSION]
 Admin has joined the chat!
 
+Admin: :bite:
+Admin: :crying:
+Admin: :smile:
+Admin: :france:
+Admin: :france_flag:
+Admin: :poop:
+Admin has joined the chat!
+
+2022-03-19 12:10:23.765641
+[BEGINNING OF THE SESSION]
+admin has joined the chat!
+
+admin: test
+admin: :poop:
+admin: :gay:
+admin: :gay_flag:
+admin: :two_men_holding_hands:
+admin: :fu:
+admin: :mahjong:
+admin: :curry:
+admin: :fr:
+admin: :en:
+admin: :checkered_flag:
+admin: :mountain_cableway:
+admin: :japanese_castle:
+admin: :european_castle:
+!emotes
+[END OF THE SESSION]

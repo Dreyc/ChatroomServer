@@ -1,7 +1,9 @@
+import os
+
 from Imports import *
 
 # free port above 1024 (no root access needed)
-PORT = 6666
+# PORT = 6666
 SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
@@ -22,7 +24,7 @@ server.bind(ADDRESS)
 # Return the address of the backup connection
 def backupConnection():
     for client in clients:
-        if clients[client] == "backup":
+        if clients[client] == "Backup":
             return client
     return None
 
@@ -67,14 +69,12 @@ def handle_client(connection, address):
                 if clients[connection].lower().__contains__("admin"):
                     if message.lower() == "!serveroff/yes":
                         print(f'{clients[connection]} asked to down the server')
-                        broadcast("Downing the server!\nCleaning the Backup : [Yes] / No".encode(FORMAT))
-                        print("[BACKUP CLEARED]")
+                        broadcast("Downing the server!".encode(FORMAT))
                         time.sleep(1)
                         os._exit(0)
                     else:
                         print(f'{clients[connection]} asked to down the server')
-                        broadcast("Downing the server!\nCleaning the Backup : Yes / [No]".encode(FORMAT))
-                        print("[BACKUP SAVED]")
+                        broadcast("Downing the server!".encode(FORMAT))
                         time.sleep(1)
                         os._exit(0)
                 else:
@@ -91,6 +91,9 @@ def handle_client(connection, address):
                 if clients[connection].lower().__contains__("admin"):
                     if backupConnection() is not None:
                         backupConnection().send("!clearbackup".encode(FORMAT))
+                        connection.send("[BACKUP CLEARED]".encode(FORMAT))
+                    else:
+                        connection.send("[NO BACKUP ENABLED]".encode(FORMAT))
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
             elif message.lower() == "!users":
@@ -98,6 +101,9 @@ def handle_client(connection, address):
                     connection.send(getUsersList(True).encode(FORMAT))
                 else:
                     connection.send(getUsersList(False).encode(FORMAT))
+            elif message.lower() == "!emotes":
+                #Link to the emote list
+                connection.send("[EMOTE LIST]".encode(FORMAT))
             else:
                 broadcast(message.encode(FORMAT))
     finally:
