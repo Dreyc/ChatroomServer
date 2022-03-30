@@ -2,7 +2,7 @@ from Imports import *
 
 # Same as server.py
 # PORT = 6666
-SERVER = "localhost" #"10.3.141.1"
+SERVER = "10.3.141.1"
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
