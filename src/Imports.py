@@ -13,7 +13,7 @@ import webbrowser
 from HyperlinkManager import *
 from functools import partial
 
-PORT = 6666
+PORT = 6665
 
 
 
