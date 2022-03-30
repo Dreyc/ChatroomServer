@@ -29,14 +29,24 @@ def backupConnection():
     return None
 
 
+def userConnection(username):
+    for client in clients:
+        if clients[client] == username:
+            return client
+    return None
+
+
 # Return all the users name and if admin addresses too
 def getUsersList(admin):
     users = "[USERS LIST]\n\n"
     i = 1
     if admin:
         for client in clients:
-            users += f"   {i}. {clients[client]}\n"
-            i += 1
+            if clients[client] != 'Backup':
+                users += f"   {i}. {clients[client]}\n"
+                i += 1
+            else:
+                users += f"    - {clients[client]}\n"
     else:
         for client in clients:
             if clients[client] != 'Backup':
@@ -104,6 +114,17 @@ def handle_client(connection, address):
             elif message.lower() == "!emotes":
                 #Link to the emote list
                 connection.send("[EMOTE LIST]".encode(FORMAT))
+            elif message.startswith("@"):
+                splitted = message.split()
+                username = splitted[0]
+                if clients[connection] == username[1:]:
+                    connection.send('[CANNOT SEND MESSAGE TO YOURSELF]'.encode(FORMAT))
+                else:
+                    mpConnection = userConnection(username[1:])
+                    if mpConnection is not None:
+                        mpConnection.send((f'[DM] {clients[connection]} : ' + message[(len(username)+1):]).encode(FORMAT))
+                    else:
+                        connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
             else:
                 broadcast(message.encode(FORMAT))
     finally:

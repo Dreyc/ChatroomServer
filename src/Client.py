@@ -2,7 +2,7 @@ from Imports import *
 
 # Same as server.py
 # PORT = 6666
-SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
+SERVER = "localhost" #"10.3.141.1"
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -18,9 +18,11 @@ wizz_sound = AudioSegment.from_mp3("wizz_sound.mp3")
 def wizz():
     play(wizz_sound)
 
+
 # Open hyperlin
 def openUrl(url):
-   webbrowser.open_new_tab(url)
+    webbrowser.open_new_tab(url)
+
 
 # Create a GUI class for the chat and the interface
 class GUI:
@@ -91,7 +93,9 @@ class GUI:
 
         self.labelBottom.place(relwidth=1, rely=0.825)
 
-        self.entryMessage = Entry(self.labelBottom, background="#2C3E50", foreground="#EAECEE", font="Helvetica 13")
+        # Inserbackground -> cursor color
+        self.entryMessage = Entry(self.labelBottom, background="#2C3E50", foreground="#EAECEE", font="Helvetica 13",
+                                  insertbackground='white')
 
         # place the given widget
         # into the gui window
@@ -133,41 +137,50 @@ class GUI:
         send = threading.Thread(target=self.sendMessage)
         send.start()
 
-
     # Receeve messages
     def receive(self):
         while True:
-            try:
-                message = client.recv(1024).decode(FORMAT)
-                if message == "Name":
-                    client.send(self.name.encode(FORMAT))
-                elif message.__contains__("Downing the server!"):
-                    # insert message to text box
-                    self.textCons.config(state=NORMAL)
-                    self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
-                    self.textCons.config(state=DISABLED)
-                    self.textCons.see(END)
-                    time.sleep(2)
-                    self.Window.destroy()
-                elif message == "wizz":
-                    wizz()
-                elif message.lower() == "[EMOTE LIST]":
-                    hyperlink = HyperlinkManager(self.textCons)
-                    self.textCons.config(state=NORMAL)
-                    self.textCons.insert(END, message, hyperlink.add(partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))))
-                    self.textCons.config(state=DISABLED)
-                    self.textCons.see(END)
-                else:
-                    # insert message to text box
-                    self.textCons.config(state=NORMAL)
-                    self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
-                    self.textCons.config(state=DISABLED)
-                    self.textCons.see(END)
-            except:
-                # Error gestion
-                print("Error!")
-                client.close()
-                break
+            # try:
+            message = client.recv(1024).decode(FORMAT)
+            if message == "Name":
+                client.send(self.name.encode(FORMAT))
+            elif message.__contains__("Downing the server!"):
+                # insert message to text box
+                self.textCons.config(state=NORMAL)
+                self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
+                self.textCons.config(state=DISABLED)
+                self.textCons.see(END)
+                time.sleep(2)
+                self.Window.destroy()
+            elif message == "wizz":
+                wizz()
+            elif message.lower() == "[EMOTE LIST]":
+                hyperlink = HyperlinkManager(self.textCons)
+                self.textCons.config(state=NORMAL)
+                #self.textCons.insert(END, message, hyperlink.add(
+                #    partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))), "mp")
+                self.textCons.insert(END, message + "\nhttps://www.webfx.com/tools/emoji-cheat-sheet/}")
+                self.textCons.config(state=DISABLED)
+                self.textCons.see(END)
+            elif message.startswith("[DM]"):
+                self.textCons.config(state=NORMAL)
+                self.textCons.insert(END, emoji.emojize(message, language='alias'), "mp")
+                self.textCons.tag_config("mp", background='#4e4e5b')
+                # Otherwise would be in color too
+                self.textCons.insert(END, "\n\n")
+                self.textCons.config(state=DISABLED)
+                self.textCons.see(END)
+            else:
+                # insert message to text box
+                self.textCons.config(state=NORMAL)
+                self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
+                self.textCons.config(state=DISABLED)
+                self.textCons.see(END)
+        # except:
+        #     # Error gestion
+        #     print("Error!")
+        #     client.close()
+        #     break
 
     # To send messages
     def sendMessage(self):
@@ -178,6 +191,9 @@ class GUI:
                 time.sleep(1)
                 self.Window.destroy()
             elif self.message.startswith("!"):
+                client.send(self.message.encode(FORMAT))
+                break
+            elif self.message.startswith("@"):
                 client.send(self.message.encode(FORMAT))
                 break
             elif self.message != "":

@@ -10,7 +10,7 @@ from Imports import *
 #     file.write(f"{datetime.datetime.now()}\n[BEGINNING OF THE SESSION]\n")
 
 # Can't bind to an under 1024 number as an unprivileged user
-PORT = 6665
+#PORT = 6666
 SERVER = "localhost"#socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
