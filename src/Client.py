@@ -2,7 +2,7 @@ from Imports import *
 
 # Same as server.py
 # PORT = 6666
-SERVER = "10.3.141.1"
+SERVER = "localhost" #"10.3.141.1"
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -170,17 +170,22 @@ class GUI:
                 self.textCons.insert(END, "\n\n")
                 self.textCons.config(state=DISABLED)
                 self.textCons.see(END)
+            elif message == "[KICKED]":
+                time.sleep(1)
+                client.send(message.encode(FORMAT))
+                time.sleep(1)
+                self.Window.destroy()
             else:
                 # insert message to text box
                 self.textCons.config(state=NORMAL)
                 self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
                 self.textCons.config(state=DISABLED)
                 self.textCons.see(END)
-        # except:
-        #     # Error gestion
-        #     print("Error!")
-        #     client.close()
-        #     break
+        except:
+             Error gestion
+             print("Error!")
+             client.close()
+             break
 
     # To send messages
     def sendMessage(self):

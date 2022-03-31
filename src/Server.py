@@ -126,6 +126,30 @@ def handle_client(connection, address):
                         connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
                     else:
                         connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+            elif message == "[KICKED]":
+                print(f'{clients[connection]} has been kicked off the server')
+                connected = False
+            elif message == "!kickall":
+                if clients[connection].lower().__contains__("admin"):
+                    print(f'{clients[connection]} kicked all the muggles')
+                    broadcast(f"{clients[connection]} casted AVADA KEDAVRA killing all the muggles in the area".encode(FORMAT))
+                    for client in clients:
+                        if not clients[client].lower().__contains__("admin"):
+                            client.send("[KICKED]".encode(FORMAT))
+                else:
+                    connection.send("[ACCESS DENIED]".encode(FORMAT))
+            elif message.startswith("!kick"):
+                if clients[connection].lower().__contains__("admin"):
+                    splitted = message.split()
+                    username = splitted[1]
+                    uConnection = userConnection(username)
+                    if username == 'Backup' or username.lower().__contains__("admin"):
+                        connection.send("[CANNOT BAN SUPER USER]".encode(FORMAT))
+                    elif uConnection is not None:
+                        uConnection.send("[KICKED]".encode(FORMAT))
+                        broadcast(f'[{clients[uConnection]} has been kicked by {clients[connection]}]'.encode(FORMAT))
+                else:
+                    connection.send("[ACCESS DENIED]".encode(FORMAT))
             else:
                 broadcast(message.encode(FORMAT))
     finally:
