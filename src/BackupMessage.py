@@ -1,19 +1,5 @@
 from Imports import *
 
-# Opening the file 'a+' to read and append mode
-# file = open('Message.txt', 'a+')
-# data = file.read(100)
-# if len(data) > 0:
-#     file.write("\n\n")
-#     file.write(f"{datetime.datetime.now()}\n[BEGINNING OF THE SESSION]\n")
-# else:
-#     file.write(f"{datetime.datetime.now()}\n[BEGINNING OF THE SESSION]\n")
-
-# Can't bind to an under 1024 number as an unprivileged user
-#PORT = 6666
-SERVER = "localhost"#socket.gethostbyname(socket.gethostname())
-ADDRESS = (SERVER, PORT)
-FORMAT = "utf-8"
 
 backup = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 backup.connect(ADDRESS)
@@ -37,7 +23,7 @@ def endBackup():
 
 
 def addMessage(message):
-    file =open('Message.txt', 'a')
+    file = open('Message.txt', 'a')
     file.write(message + '\n')
     file.close()
 

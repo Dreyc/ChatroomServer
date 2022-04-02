@@ -1,17 +1,9 @@
-import os
-import time
-
 from Imports import *
 
-# free port above 1024 (no root access needed)
-# PORT = 6666
-SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
-ADDRESS = (SERVER, PORT)
-FORMAT = "utf-8"
-DISCONNECT_MESSAGE = "!DISCONNECT"
-PASSWORD = "admin"
+
 # True if backup enabled
 BACKUP = False
+
 # List of clients and their names
 # clients, names = [], []
 # Connection : Name
@@ -37,6 +29,18 @@ def userConnection(username):
             return client
     return None
 
+def commands(admin):
+    command = ""
+    if admin:
+        command += "[ADMIN COMMAND LIST]\n\n"
+        for c in commandList:
+            command += f"   -{c}\n"
+        command += "\n"
+    else:
+        command += "[COMMAND LIST]\n\n"
+        for c in commandListUser:
+            command += f"   -{c}\n"
+    return command
 
 # Return all the users name and if admin addresses too
 def getUsersList(admin):
@@ -73,7 +77,7 @@ def handle_client(connection, address):
             # received message
             message = connection.recv(1024).decode(FORMAT)
 
-            if message == DISCONNECT_MESSAGE or message.lower() == "quit":
+            if message.lower() == "!quit":
                 print(f'{clients[connection]} Deconnected!')
                 broadcast(f'{clients[connection]} Deconnected!'.encode(FORMAT))
                 connected = False
@@ -114,9 +118,6 @@ def handle_client(connection, address):
                     connection.send(getUsersList(True).encode(FORMAT))
                 else:
                     connection.send(getUsersList(False).encode(FORMAT))
-            elif message.lower() == "!emotes":
-                #Link to the emote list
-                connection.send("[EMOTE LIST]".encode(FORMAT))
             elif message.startswith("@"):
                 splitted = message.split()
                 username = splitted[0]
@@ -172,6 +173,11 @@ def handle_client(connection, address):
                         broadcast(f'[{clients[uConnection]} has been kicked by {clients[connection]}]'.encode(FORMAT))
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
+            elif message == "!help":
+                if clients[connection].lower().__contains__("admin"):
+                    connection.send(commands(True).encode(FORMAT))
+                else:
+                    connection.send(commands(False).encode(FORMAT))
             else:
                 broadcast(message.encode(FORMAT))
     finally:

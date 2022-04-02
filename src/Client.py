@@ -1,13 +1,7 @@
-import time
-
 from Imports import *
 
-# Same as server.py
-# PORT = 6666
-SERVER = "localhost" #"10.3.141.1"
+
 ADDRESS = (SERVER, PORT)
-FORMAT = "utf-8"
-DISCONNECT_MESSAGE = "!DISCONNECT"
 
 # Creating a new client and connect to the server
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,15 +11,20 @@ client.connect(ADDRESS)
 wizz_sound = AudioSegment.from_mp3("wizz_sound.mp3")
 avada_kedavra = AudioSegment.from_mp3("Avada_Kedavra.mp3")
 
+
 def wizz():
     play(wizz_sound)
+
 
 def avadaKedavra():
     play(avada_kedavra)
 
-# Open hyperlin
-def openUrl(url):
-    webbrowser.open_new_tab(url)
+
+def isCommand(command):
+    for c in commandList:
+        if c == command:
+            return True
+    return False
 
 
 # Create a GUI class for the chat and the interface
@@ -61,7 +60,7 @@ class GUI:
         self.entryName.focus()
         # Button
         self.continueButton = Button(self.login, text="Continue", font="Helvetica 14 bold",
-                                        command=lambda: self.password(self.entryName.get()))
+                                     command=lambda: self.password(self.entryName.get()))
         self.continueButton.place(relx=0.4, rely=0.55)
 
         self.Window.mainloop()
@@ -77,7 +76,8 @@ class GUI:
             self.login.configure(width=400, height=300)
 
             # Creation of a label
-            self.pls = Label(self.login, text="Please enter password\nto login as Admin", justify=CENTER, font="Helvetica 14 bold")
+            self.pls = Label(self.login, text="Please enter password\nto login as Admin", justify=CENTER,
+                             font="Helvetica 14 bold")
             self.pls.place(relheight=0.15, relx=0.2, rely=0.07)
 
             # Creation of a label
@@ -90,13 +90,12 @@ class GUI:
             self.entryPassword.place(relwidth=0.4, relheight=0.12, relx=0.35, rely=0.2)
             # Focus of the cursor
             self.entryPassword.focus()
-            #continue button
+            # continue button
             self.continueButton = Button(self.login, text="Continue", font="Helvetica 14 bold",
                                          command=lambda: self.continueButtonFct(name, self.entryPassword.get()))
             self.continueButton.place(relx=0.4, rely=0.55)
         else:
             self.continueButtonFct(name, None)
-
 
     def continueButtonFct(self, name, password):
         self.login.destroy()
@@ -159,13 +158,6 @@ class GUI:
 
         self.textCons.config(state=DISABLED)
 
-    # def on_press(self, key):
-    #     if key == keyboard.Key.enter:
-    #         self.sendButton(self.entryMessage.get())
-    #
-    # listener = keyboard.Listener(on_press=on_press(self))
-    # listener.start()
-
     # Starts the thread for sending messages
     def sendButton(self, message):
         self.textCons.config(state=DISABLED)
@@ -197,10 +189,7 @@ class GUI:
                 elif message == "wizz":
                     wizz()
                 elif message.lower() == "[EMOTE LIST]":
-                    hyperlink = HyperlinkManager(self.textCons)
                     self.textCons.config(state=NORMAL)
-                    #self.textCons.insert(END, message, hyperlink.add(
-                    #    partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))), "mp")
                     self.textCons.insert(END, f'{message}\nhttps://www.webfx.com/tools/emoji-cheat-sheet/')
                     self.textCons.config(state=DISABLED)
                     self.textCons.see(END)
@@ -230,21 +219,28 @@ class GUI:
                     self.textCons.config(state=DISABLED)
                     self.textCons.see(END)
             except:
-                 #Error gestion
-                 print("Error!")
-                 client.close()
-                 break
+                # Error gestion
+                print("Error!")
+                client.close()
+                break
 
     # To send messages
     def sendMessage(self):
         self.textCons.config(state=DISABLED)
         while True:
-            if self.message == DISCONNECT_MESSAGE or self.message.lower() == "quit":
-                client.send(DISCONNECT_MESSAGE.encode(FORMAT))
+            if self.message.lower() == "!quit":
+                client.send(self.message.encode(FORMAT))
                 time.sleep(1)
                 self.Window.destroy()
             elif self.message.startswith("!"):
-                client.send(self.message.encode(FORMAT))
+                command = self.message.split()
+                if isCommand(command[0]):
+                    client.send(self.message.encode(FORMAT))
+                else:
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, "[UNREGISTERED COMMAND]\n!help to see all the commands" + "\n\n")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
                 break
             elif self.message.startswith("@"):
                 client.send(self.message.encode(FORMAT))

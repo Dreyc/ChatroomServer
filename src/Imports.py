@@ -4,18 +4,20 @@ import os
 import time
 import datetime
 from tkinter import *
-#from pynput import keyboard
 from pydub import AudioSegment
 from pydub.playback import play
 import emoji
-import hyperlink
-import webbrowser
-from HyperlinkManager import *
-from functools import partial
 
-PORT = 6666
+# Constantes
+# Port above 1024 (no root access needed)
+PORT = 6665
+FORMAT = "utf-8"
+SERVER = 'localhost' #"10.3.141.1"
+ADDRESS = (SERVER, PORT)
+PASSWORD = "admin"
 
+commandList = ["!clearbackup", "!help", "!kick",
+                "!kickall", "!nbconnections", "!quit",
+                "!serveroff", "!users", "!wizz"]
 
-
-#sudo apt install unifont
-#pip install hyperlink
+commandListUser = ["!help", "!nbconnections", "!quit", "!users", "!wizz"]
