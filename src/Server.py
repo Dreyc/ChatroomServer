@@ -1,12 +1,14 @@
 from Imports import *
 
+##########################################
+# All the time.sleep are to avoid errors #
+##########################################
+
 
 # True if backup enabled
 BACKUP = False
 
-# List of clients and their names
-# clients, names = [], []
-# Connection : Name
+# Dictionary of the clients connections and their names
 clients = dict()
 
 # Creating a socket for the server and bind the
@@ -22,13 +24,16 @@ def backupConnection():
             return client
     return None
 
-
+# Return the connection corresponding to the username
+# None if not found
 def userConnection(username):
     for client in clients:
         if clients[client] == username:
             return client
     return None
 
+# return a string with a list of all command
+# depends on if you're admin or not
 def commands(admin):
     command = ""
     if admin:
@@ -76,11 +81,13 @@ def handle_client(connection, address):
         while connected:
             # received message
             message = connection.recv(1024).decode(FORMAT)
-
+            # the code below correspond of all the commands
+            # and actions of them
             if message.lower() == "!quit":
                 print(f'{clients[connection]} Deconnected!')
                 broadcast(f'{clients[connection]} Deconnected!'.encode(FORMAT))
                 connected = False
+            # turns down the server and disconnect all the users
             elif message.lower() == "!serveroff" or message.lower() == "!serveroff/yes":
                 if clients[connection].lower().__contains__("admin"):
                     if message.lower() == "!serveroff/yes":
@@ -95,15 +102,18 @@ def handle_client(connection, address):
                         os._exit(0)
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
+            # return the number of connections, without the backup one
             elif message.lower() == "!nbconnections":
                 if BACKUP:
                     connection.send(f"[{threading.active_count() - 2} active connection(s)]".encode(FORMAT))
                 else:
                     connection.send(f"[{threading.active_count() - 1} active connection(s)]".encode(FORMAT))
+            # play the wizz sound to all users
             elif message.lower() == "!wizz":
                 broadcast(f"{clients[connection]} wizzed!".encode(FORMAT))
                 time.sleep(0.5)
                 broadcast("wizz".encode(FORMAT))
+            # if admin, clear all the logs of the backup
             elif message.lower() == "!clearbackup":
                 if clients[connection].lower().__contains__("admin"):
                     if backupConnection() is not None:
@@ -113,18 +123,24 @@ def handle_client(connection, address):
                         connection.send("[NO BACKUP ENABLED]".encode(FORMAT))
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
+            # return the list of all the users, if admin backup is in it
             elif message.lower() == "!users":
                 if clients[connection].lower().__contains__("admin"):
                     connection.send(getUsersList(True).encode(FORMAT))
                 else:
                     connection.send(getUsersList(False).encode(FORMAT))
+            # Direct Messages
             elif message.startswith("@"):
+                # Slitting the message to separate the username from the message
                 splitted = message.split()
+                # retrieve the usernam : @example
                 username = splitted[0]
+                # so the message isn't empty
                 if len(splitted) > 1:
                     if clients[connection] == username[1:]:
                         connection.send('[CANNOT SEND MESSAGE TO YOURSELF]'.encode(FORMAT))
                     else:
+                        # username[1:] to crop the @ of the username to find it
                         mpConnection = userConnection(username[1:])
                         if mpConnection is not None:
                             mpConnection.send((f'[DM] {clients[connection]} : ' + message[(len(username)+1):]).encode(FORMAT))
@@ -133,7 +149,9 @@ def handle_client(connection, address):
                             connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
                 else:
                     connection.send("[EMPTY DM]".encode(FORMAT))
+            # Anonymous Direct Messages
             elif message.startswith("a@"):
+                # Same as Direct Messages code above
                 splitted = message.split()
                 username = splitted[0]
                 if len(splitted) > 1:
@@ -148,11 +166,14 @@ def handle_client(connection, address):
                             connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
                 else:
                     connection.send("[EMPTY DM]".encode(FORMAT))
+            # Message to end the connection of a client who has been kciked
             elif message == "[KICKED]":
                 print(f'{clients[connection]} has been kicked off the server')
                 connected = False
+            # if admin, kick all the users that aren't admin or backup
             elif message == "!kickall":
                 if clients[connection].lower().__contains__("admin"):
+                    # Reference to Harry Potter
                     print(f'{clients[connection]} kicked all the muggles')
                     broadcast(f"{clients[connection]} casted AVADA KEDAVRA killing all the muggles in the area".encode(FORMAT))
                     time.sleep(0.1)
@@ -161,6 +182,7 @@ def handle_client(connection, address):
                             client.send("[KICKED]".encode(FORMAT))
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
+            # to kick for the server a person : !kick user
             elif message.startswith("!kick"):
                 if clients[connection].lower().__contains__("admin"):
                     splitted = message.split()
@@ -173,17 +195,24 @@ def handle_client(connection, address):
                         broadcast(f'[{clients[uConnection]} has been kicked by {clients[connection]}]'.encode(FORMAT))
                 else:
                     connection.send("[ACCESS DENIED]".encode(FORMAT))
+            # Print all the command that the user can call
             elif message == "!help":
                 if clients[connection].lower().__contains__("admin"):
                     connection.send(commands(True).encode(FORMAT))
                 else:
                     connection.send(commands(False).encode(FORMAT))
+            # send the message to all the clients connected
             else:
                 broadcast(message.encode(FORMAT))
     finally:
+        # if a connection is stopped, delete the user from the
+        # dictionary and close the connection
         del clients[connection]
         connection.close()
 
+# if the name of the new client contains "admin"
+# the password has to be the right one otherwise
+# the new client isn't allowed to connect
 def admin(name, connection):
     if name.lower().__contains__("admin"):
         connection.send("Password".encode(FORMAT))
@@ -200,8 +229,11 @@ def start():
     # Listenning for connections
     server.listen()
     while True:
+        # connection socket and address of the new client
         connection, address = server.accept()
+        # request the name
         connection.send("Name".encode(FORMAT))
+        # decode the message to save the name
         name = connection.recv(1024).decode(FORMAT)
         if admin(name, connection):
             # Adding the client and his name to the list
@@ -228,4 +260,5 @@ def start():
 
 # Launching the chat session
 start()
+# End the script
 os._exit(0)
