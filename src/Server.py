@@ -120,15 +120,33 @@ def handle_client(connection, address):
             elif message.startswith("@"):
                 splitted = message.split()
                 username = splitted[0]
-                if clients[connection] == username[1:]:
-                    connection.send('[CANNOT SEND MESSAGE TO YOURSELF]'.encode(FORMAT))
-                else:
-                    mpConnection = userConnection(username[1:])
-                    if mpConnection is not None:
-                        mpConnection.send((f'[DM] {clients[connection]} : ' + message[(len(username)+1):]).encode(FORMAT))
-                        connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
+                if len(splitted) > 1:
+                    if clients[connection] == username[1:]:
+                        connection.send('[CANNOT SEND MESSAGE TO YOURSELF]'.encode(FORMAT))
                     else:
-                        connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+                        mpConnection = userConnection(username[1:])
+                        if mpConnection is not None:
+                            mpConnection.send((f'[DM] {clients[connection]} : ' + message[(len(username)+1):]).encode(FORMAT))
+                            connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
+                        else:
+                            connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+                else:
+                    connection.send("[EMPTY DM]".encode(FORMAT))
+            elif message.startswith("a@"):
+                splitted = message.split()
+                username = splitted[0]
+                if len(splitted) > 1:
+                    if clients[connection] == username[2:]:
+                        connection.send('[CANNOT SEND MESSAGE TO YOURSELF]'.encode(FORMAT))
+                    else:
+                        mpConnection = userConnection(username[2:])
+                        if mpConnection is not None:
+                            mpConnection.send((f'[DM] ' + message[(len(username)+1):]).encode(FORMAT))
+                            connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
+                        else:
+                            connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+                else:
+                    connection.send("[EMPTY DM]".encode(FORMAT))
             elif message == "[KICKED]":
                 print(f'{clients[connection]} has been kicked off the server')
                 connected = False
@@ -171,8 +189,6 @@ def admin(name, connection):
 
 # start the chat
 def start():
-    # Sequence for anonymous name
-    seq = 0
     # Server is on and print the IP
     print(f"[SERVER STARTED][{SERVER}]")
     # Listenning for connections

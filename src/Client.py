@@ -249,6 +249,9 @@ class GUI:
             elif self.message.startswith("@"):
                 client.send(self.message.encode(FORMAT))
                 break
+            elif self.message.startswith("a@"):
+                client.send(self.message.encode(FORMAT))
+                break
             elif self.message != "":
                 message = f"{self.name}: {self.message}"
                 client.send(message.encode(FORMAT))
