@@ -1,3 +1,6 @@
+###################################################################
+# Mikail YILMAZ, Ouassim MEFTAH, Hilmi CELAYIR & Quentin BERTRAND #
+###################################################################
 from Imports import *
 
 # Creating and connecting the backup to the server

@@ -1,3 +1,6 @@
+###################################################################
+# Mikail YILMAZ, Ouassim MEFTAH, Hilmi CELAYIR & Quentin BERTRAND #
+###################################################################
 import socket
 import threading
 import os
