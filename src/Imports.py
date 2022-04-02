@@ -17,6 +17,7 @@ PORT = 6665
 # Format to encode all the messages
 FORMAT = "utf-8"
 # Address where the clients and the server are connected to
+# Doesn't change, we made it static
 SERVER = 'localhost' #"10.3.141.1"
 ADDRESS = (SERVER, PORT)
 # Password for the admin clients
