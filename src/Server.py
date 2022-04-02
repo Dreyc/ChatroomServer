@@ -1,4 +1,5 @@
 import os
+import time
 
 from Imports import *
 
@@ -8,6 +9,7 @@ SERVER = "localhost"  # socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
+PASSWORD = "admin"
 # True if backup enabled
 BACKUP = False
 # List of clients and their names
@@ -96,6 +98,7 @@ def handle_client(connection, address):
                     connection.send(f"[{threading.active_count() - 1} active connection(s)]".encode(FORMAT))
             elif message.lower() == "!wizz":
                 broadcast(f"{clients[connection]} wizzed!".encode(FORMAT))
+                time.sleep(0.5)
                 broadcast("wizz".encode(FORMAT))
             elif message.lower() == "!clearbackup":
                 if clients[connection].lower().__contains__("admin"):
@@ -133,6 +136,7 @@ def handle_client(connection, address):
                 if clients[connection].lower().__contains__("admin"):
                     print(f'{clients[connection]} kicked all the muggles')
                     broadcast(f"{clients[connection]} casted AVADA KEDAVRA killing all the muggles in the area".encode(FORMAT))
+                    time.sleep(0.1)
                     for client in clients:
                         if not clients[client].lower().__contains__("admin"):
                             client.send("[KICKED]".encode(FORMAT))
@@ -156,6 +160,14 @@ def handle_client(connection, address):
         del clients[connection]
         connection.close()
 
+def admin(name, connection):
+    if name.lower().__contains__("admin"):
+        connection.send("Password".encode(FORMAT))
+        password = connection.recv(1024).decode(FORMAT)
+        if password != PASSWORD:
+            connection.send("[NOPE]".encode(FORMAT))
+            return False
+    return True
 
 # start the chat
 def start():
@@ -169,27 +181,27 @@ def start():
         connection, address = server.accept()
         connection.send("Name".encode(FORMAT))
         name = connection.recv(1024).decode(FORMAT)
+        if admin(name, connection):
+            # Adding the client and his name to the list
+            # clients.append(connection)
+            # names.append(name)
+            clients[connection] = name
+            # Sinon les messages ne s'affichent pas pour le nouveau client
+            if name != 'Backup':
+                print(f"New connection's name : {name}")
+                # To every user connected
+                broadcast(f"{name} has joined the chat!\n".encode(FORMAT))
+                # To the user
+                connection.send("Connected!\n".encode(FORMAT))
+            else:
+                BACKUP = True
+                print('[BACKUP ENABLED]')
+            # Starting the Thread
+            thread = threading.Thread(target=handle_client, args=(connection, address))
+            thread.start()
+            # Print number of active connections
+            print(f"Active connections : {threading.active_count() - 1}")
 
-        # Adding the client and his name to the list
-        # clients.append(connection)
-        # names.append(name)
-        clients[connection] = name
-
-        if name != 'Backup':
-            print(f"New connection's name : {name}")
-
-            # To every user connected
-            broadcast(f"{name} has joined the chat!\n".encode(FORMAT))
-            # To the user
-            connection.send("Connected!\n".encode(FORMAT))
-        else:
-            BACKUP = True
-            print('[BACKUP ENABLED]')
-        # Starting the Thread
-        thread = threading.Thread(target=handle_client, args=(connection, address))
-        thread.start()
-        # Print number of active connections
-        print(f"Active connections : {threading.active_count() - 1}")
 
 
 # Launching the chat session

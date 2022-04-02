@@ -1,3 +1,5 @@
+import time
+
 from Imports import *
 
 # Same as server.py
@@ -13,11 +15,13 @@ client.connect(ADDRESS)
 
 # Sound of the wizz command
 wizz_sound = AudioSegment.from_mp3("wizz_sound.mp3")
-
+avada_kedavra = AudioSegment.from_mp3("Avada_Kedavra.mp3")
 
 def wizz():
     play(wizz_sound)
 
+def avadaKedavra():
+    play(avada_kedavra)
 
 # Open hyperlin
 def openUrl(url):
@@ -55,24 +59,57 @@ class GUI:
         self.entryName.place(relwidth=0.4, relheight=0.12, relx=0.35, rely=0.2)
         # Focus of the cursor
         self.entryName.focus()
-
         # Button
         self.continueButton = Button(self.login, text="Continue", font="Helvetica 14 bold",
-                                     command=lambda: self.continueButtonFct(self.entryName.get()))
+                                        command=lambda: self.password(self.entryName.get()))
         self.continueButton.place(relx=0.4, rely=0.55)
+
         self.Window.mainloop()
 
-    def continueButtonFct(self, name):
+    def password(self, name):
+        if name.lower().__contains__("admin"):
+            self.login.destroy()
+            # Create a password window
+            self.login = Toplevel()
+            # Title and settings of the login window
+            self.login.title("Login")
+            self.login.resizable(width=False, height=False)
+            self.login.configure(width=400, height=300)
+
+            # Creation of a label
+            self.pls = Label(self.login, text="Please enter password\nto login as Admin", justify=CENTER, font="Helvetica 14 bold")
+            self.pls.place(relheight=0.15, relx=0.2, rely=0.07)
+
+            # Creation of a label
+            self.labelPassword = Label(self.login, text="Password : ", font="Helvetica 12")
+
+            self.labelPassword.place(relheight=0.2, relx=0.1, rely=0.2)
+
+            # Creation a entry box for the message
+            self.entryPassword = Entry(self.login, font="Helvetica 14")
+            self.entryPassword.place(relwidth=0.4, relheight=0.12, relx=0.35, rely=0.2)
+            # Focus of the cursor
+            self.entryPassword.focus()
+            #continue button
+            self.continueButton = Button(self.login, text="Continue", font="Helvetica 14 bold",
+                                         command=lambda: self.continueButtonFct(name, self.entryPassword.get()))
+            self.continueButton.place(relx=0.4, rely=0.55)
+        else:
+            self.continueButtonFct(name, None)
+
+
+    def continueButtonFct(self, name, password):
         self.login.destroy()
-        self.layout(name)
+        self.layout(name, password)
 
         # thread ro receive message
         receive = threading.Thread(target=self.receive)
         receive.start()
 
     # Layout of the chat
-    def layout(self, name):
+    def layout(self, name, password):
         self.name = name
+        self.password = password
 
         # Set Window settings
         self.Window.deiconify()
@@ -140,52 +177,63 @@ class GUI:
     # Receeve messages
     def receive(self):
         while True:
-            # try:
-            message = client.recv(1024).decode(FORMAT)
-            if message == "Name":
-                client.send(self.name.encode(FORMAT))
-            elif message.__contains__("Downing the server!"):
-                # insert message to text box
-                self.textCons.config(state=NORMAL)
-                self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
-                self.textCons.config(state=DISABLED)
-                self.textCons.see(END)
-                time.sleep(2)
-                self.Window.destroy()
-            elif message == "wizz":
-                wizz()
-            elif message.lower() == "[EMOTE LIST]":
-                hyperlink = HyperlinkManager(self.textCons)
-                self.textCons.config(state=NORMAL)
-                #self.textCons.insert(END, message, hyperlink.add(
-                #    partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))), "mp")
-                self.textCons.insert(END, message + "\nhttps://www.webfx.com/tools/emoji-cheat-sheet/}")
-                self.textCons.config(state=DISABLED)
-                self.textCons.see(END)
-            elif message.startswith("[DM]"):
-                self.textCons.config(state=NORMAL)
-                self.textCons.insert(END, emoji.emojize(message, language='alias'), "mp")
-                self.textCons.tag_config("mp", background='#4e4e5b')
-                # Otherwise would be in color too
-                self.textCons.insert(END, "\n\n")
-                self.textCons.config(state=DISABLED)
-                self.textCons.see(END)
-            elif message == "[KICKED]":
-                time.sleep(1)
-                client.send(message.encode(FORMAT))
-                time.sleep(1)
-                self.Window.destroy()
-            else:
-                # insert message to text box
-                self.textCons.config(state=NORMAL)
-                self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
-                self.textCons.config(state=DISABLED)
-                self.textCons.see(END)
-        except:
-             Error gestion
-             print("Error!")
-             client.close()
-             break
+            try:
+                message = client.recv(1024).decode(FORMAT)
+                if message == "Name":
+                    client.send(self.name.encode(FORMAT))
+                elif message == "Password":
+                    client.send(self.password.encode(FORMAT))
+                elif message == "[NOPE]":
+                    print("Wong Password!")
+                    self.Window.destroy()
+                elif message.__contains__("Downing the server!"):
+                    # insert message to text box
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, message + "\n\nDeconnection in 2 seconds!")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+                    time.sleep(2)
+                    self.Window.destroy()
+                elif message == "wizz":
+                    wizz()
+                elif message.lower() == "[EMOTE LIST]":
+                    hyperlink = HyperlinkManager(self.textCons)
+                    self.textCons.config(state=NORMAL)
+                    #self.textCons.insert(END, message, hyperlink.add(
+                    #    partial(webbrowser.open("https://www.webfx.com/tools/emoji-cheat-sheet/"))), "mp")
+                    self.textCons.insert(END, f'{message}\nhttps://www.webfx.com/tools/emoji-cheat-sheet/')
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+                elif message.startswith("[DM]"):
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, emoji.emojize(message, language='alias'), "mp")
+                    self.textCons.tag_config("mp", background='#4e4e5b')
+                    # Otherwise would be in color too
+                    self.textCons.insert(END, "\n\n")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+                elif message == "[KICKED]":
+                    time.sleep(1)
+                    client.send(message.encode(FORMAT))
+                    time.sleep(1)
+                    self.Window.destroy()
+                elif message.__contains__("AVADA KEDAVRA"):
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, f"{message}\n\n")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+                    avadaKedavra()
+                else:
+                    # insert message to text box
+                    self.textCons.config(state=NORMAL)
+                    self.textCons.insert(END, emoji.emojize(message, language='alias') + "\n\n")
+                    self.textCons.config(state=DISABLED)
+                    self.textCons.see(END)
+            except:
+                 #Error gestion
+                 print("Error!")
+                 client.close()
+                 break
 
     # To send messages
     def sendMessage(self):
