@@ -178,7 +178,7 @@ def handle_client(connection, address):
                 if clients[connection].lower().__contains__("admin"):
                     # Reference to Harry Potter
                     print(f'{clients[connection]} kicked all the muggles')
-                    broadcast(f"{clients[connection]} casted AVADA KEDAVRA killing all the muggles in the area".encode(FORMAT))
+                    broadcast(f"{clients[connection]} casted AVADA KEDAVRA !\nKilling all the muggles in the area".encode(FORMAT))
                     time.sleep(0.1)
                     for client in clients:
                         if not clients[client].lower().__contains__("admin"):
