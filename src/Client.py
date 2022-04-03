@@ -79,7 +79,7 @@ class GUI:
             self.login.configure(width=400, height=300)
 
             # Creation of a label
-            self.pls = Label(self.login, text="Please enter password\nto login as Admin", justify=CENTER,
+            self.pls = Label(self.login, text="Please enter a password\nto login as Admin", justify=CENTER,
                              font="Helvetica 14 bold")
             self.pls.place(relheight=0.15, relx=0.2, rely=0.07)
 

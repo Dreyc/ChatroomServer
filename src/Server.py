@@ -69,7 +69,7 @@ def getUsersList(admin):
     return users
 
 
-# Send the message to other users
+# Send the message to all users
 def broadcast(message):
     for client in clients:
         client.send(message)
@@ -258,7 +258,6 @@ def start():
             thread.start()
             # Print number of active connections
             print(f"Active connections : {threading.active_count() - 1}")
-
 
 
 # Launching the chat session
