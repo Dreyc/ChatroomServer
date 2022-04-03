@@ -3,6 +3,8 @@
 ###################################################################
 from Imports import *
 
+time.sleep(5)
+
 # Creating and connecting the backup to the server
 backup = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 backup.connect(ADDRESS)
@@ -25,6 +27,7 @@ def startBackup():
 
 # Ending the backup by writing down an End of the Session sign
 def endBackup():
+    print("[ENDING THE BACKUP]")
     # Open the file in append mode only, doesn't need to read it
     file = open('Message.txt', 'a')
     file.write("[END OF THE SESSION]\n")
