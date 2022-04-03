@@ -10,6 +10,8 @@ from tkinter import *
 from pydub import AudioSegment
 from pydub.playback import play
 import emoji
+# To run the server and the backup together
+import subprocess
 
 # Constants
 # Port above 1024 (no root access needed)
