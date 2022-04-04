@@ -149,7 +149,7 @@ def handle_client(connection, address):
                             mpConnection.send((f'[DM] {clients[connection]} : ' + message[(len(username)+1):]).encode(FORMAT))
                             connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
                         else:
-                            connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+                            connection.send((f'[ {username[1:]} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
                 else:
                     connection.send("[EMPTY DM]".encode(FORMAT))
             # Anonymous Direct Messages
@@ -166,7 +166,7 @@ def handle_client(connection, address):
                             mpConnection.send((f'[DM] ' + message[(len(username)+1):]).encode(FORMAT))
                             connection.send((f'[DM] {clients[connection]} : ' + message).encode(FORMAT))
                         else:
-                            connection.send((f'[{username} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
+                            connection.send((f'[ {username[2:]} NOT FOUND]\nMessage : ' + message[(len(username)+1):]).encode(FORMAT))
                 else:
                     connection.send("[EMPTY DM]".encode(FORMAT))
             # Message to end the connection of a client who has been kciked
