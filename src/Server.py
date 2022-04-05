@@ -42,12 +42,12 @@ def commands(admin):
     if admin:
         command += "[ADMIN COMMAND LIST]\n\n"
         for c in commandList:
-            command += f"   -{c}\n"
-        command += "\n"
+            command += f"   - {c}\n"
+        command += "   - a@[user]\n   - @[user]"
     else:
         command += "[COMMAND LIST]\n\n"
         for c in commandListUser:
-            command += f"   -{c}\n"
+            command += f"   - {c}\n"
     return command
 
 # Return all the users name and if admin addresses too
