@@ -91,14 +91,8 @@ def handle_client(connection, address):
                 broadcast(f'{clients[connection]} Deconnected!'.encode(FORMAT))
                 connected = False
             # turns down the server and disconnect all the users
-            elif message.lower() == "!serveroff" or message.lower() == "!serveroff/yes":
+            elif message.lower() == "!serveroff":
                 if clients[connection].lower().__contains__("admin"):
-                    if message.lower() == "!serveroff/yes":
-                        print(f'{clients[connection]} asked to down the server')
-                        broadcast("Downing the server!".encode(FORMAT))
-                        time.sleep(1)
-                        os._exit(0)
-                    else:
                         print(f'{clients[connection]} asked to down the server')
                         broadcast("Downing the server!".encode(FORMAT))
                         time.sleep(1)
